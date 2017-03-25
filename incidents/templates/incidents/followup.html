@@ -1,6 +1,7 @@
 {% load fir_plugins %}
 {% load i18n %}
 {% load staticfiles %}
+{%  load markdown %}
 
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
@@ -26,7 +27,7 @@
 
 		<table class='minitable table'>
 			<tr class='slim'>
-				{% if incident_show_id %}<td class='head'>ID</td><td class='delim'>#{{ incident.id }}</td>{% endif %}
+				{% if incident_show_id %}<td class='head'>ID</td><td class='delim'>{{ incident|object_id }}</td>{% endif %}
 				{%if incident.is_incident%}
 				<td class='head'>{%  trans "Incident Leader" %}</td><td class='delim'>{{ incident.actor }}</td>
 				<td class='head'>{%  trans "Plan" %}</td><td class='delim'>{{ incident.plan }}</td>
@@ -46,7 +47,7 @@
 
 		<div class='description'>
 			<h3>{% trans "Summary" %}</h3>
-			<p class='artifacts'>{{ incident.description|safe }}</p>
+			<p class='artifacts'>{{ incident.description|markdown }}</p>
 		</div>
 
 		<br style='clear:both' />
@@ -66,7 +67,7 @@
 		  <tr id="comment_id_{{comment.id}}">
 		  	<td style='width:10%'>{{ comment.date|date:"Y-m-d G:i" }}</td>
 		  	<td>{{ comment.opened_by|default:"someone" }}</td>
-		  	<td class='artifacts'>{{ comment.comment|safe }}</td>
+		  	<td class='artifacts'>{{ comment.comment|markdown }}</td>
 		  	<td>{{ comment.action }}</td>
 		  </tr>
 		{% endfor %}

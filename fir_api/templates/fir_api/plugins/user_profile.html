@@ -1,0 +1,23 @@
+{% load i18n %}
+{% if perms.incidents.handle_incidents %}
+<div class="row">
+
+  <div class="col-sm-8 col-sm-offset-2">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">FIR API - {% trans "API Access" %}</h3>
+      </div>
+      <div class="panel-body">
+          <p>You need to be authenticated in order to use the API. It will accept session or token based authentication.
+          Tokens can be managed in the administration interface and should be specified as a <strong>request header</strong>.</p>
+          Example:<br/>
+          <pre>Authorization: Token {{ user.auth_token.key }}</pre>
+      </div>
+      <table class='table'>
+        <tr><th>{% trans "Token" %}</th><td><code>{{ user.auth_token.key }}</code></td></tr>
+        <tr><th>{% trans "Created" %}</th><td><code>{{ user.auth_token.created }}</code></td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+{% endif %}

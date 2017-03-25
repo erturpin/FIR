@@ -1,12 +1,12 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from incidents import views
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^yearly$', views.yearly_stats, name='yearly'),
     url(r'^data/yearly/incidents$', views.data_yearly_incidents, name='data_yearly_incidents'),
 
-    url(r'^data/yearly/bl$', views.data_yearly_bl, {'type': 'incidents'}, name='data_yearly_bl'),
+    url(r'^data/yearly/bl$', views.data_yearly_bl, name='data_yearly_bl'),
     url(r'^data/yearly/bl/(?P<year>\d+)/incidents$', views.data_yearly_bl, {'type': 'incidents'}, name='data_yearly_bl'),
     url(r'^data/yearly/bl/(?P<year>\d+)/events$', views.data_yearly_bl, {'type': 'events'}, name='data_yearly_bl_events'),  # events
     url(r'^data/yearly/bl/detection$', views.data_yearly_bl_detection, name='data_yearly_bl_detection'),
@@ -33,9 +33,9 @@ urlpatterns = patterns('',
     # per bl
     url(r'^data/quarterly/(?P<business_line>[\w\s]+)/variation$', views.data_incident_variation, name='data_incident_variation'),
     url(r'^data/quarterly/(?P<business_line>[\w\s]+)/(?P<divisor>\w+)$', views.data_quarterly_bl, name='data_quarterly_bl'),
+    url(r'^quarterly/close_old$', views.close_old, name='close_old'),
     url(r'^quarterly/(?P<business_line>[\w\s]+)$', views.quarterly_bl_stats, name='quarterly_bl_stats'),
     url(r'^quarterly/$', views.quarterly_bl_stats, name='quarterly_bl_stats_default'),
-    url(r'^quarterly/close_old$', views.close_old, name='close_old'),
 
     # sandbox
     url(r'^sandbox/$', views.sandbox, name='sandbox'),
@@ -48,4 +48,4 @@ urlpatterns = patterns('',
     url(r'^data/attributes/basic/$', views.stats_attributes_basic, name='attributes_basic'),
     url(r'^data/attributes/table/$', views.stats_attributes_table, name='attributes_table'),
     url(r'^data/attributes/over_time/$', views.stats_attributes_over_time, name='attributes_over_time'),
-)
+]

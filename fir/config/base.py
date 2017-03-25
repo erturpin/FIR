@@ -1,11 +1,15 @@
+from __future__ import absolute_import, unicode_literals
+
 import os
+from pkgutil import find_loader
+from importlib import import_module
 
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 # Django settings for fir project.
 
-LOGIN_URL = "/login"
-LOGOUT_URL = "/logout"
+LOGIN_URL = "/login/"
+LOGOUT_URL = "/logout/"
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -58,6 +62,12 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+# Authentication and authorization backends
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # default
+    'incidents.authorization.ObjectPermissionBackend',
+)
+
 # Absolute filesystem path to the directory that will hold user-uploaded files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 
@@ -78,10 +88,14 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'incidents',
     'django.contrib.admin',
+    'rest_framework',
+    'rest_framework.authtoken',
     'fir_plugins',
-    'fir_artifacts'
+    'incidents',
+    'fir_artifacts',
+    'treebeard',
+    'fir_email'
 )
 
 apps_file = os.path.join(BASE_DIR, 'fir', 'config', 'installed_apps.txt')
@@ -92,17 +106,82 @@ if os.path.exists(apps_file):
             line = line.strip()
             if line != "":
                 apps.append(line)
+                settings = '{}.settings'.format(line)
+                if find_loader(settings):
+                    globals().update(import_module(settings).__dict__)
 
     INSTALLED_APPS = tuple(apps)
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.request",
-    "django.contrib.messages.context_processors.messages"
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'OPTIONS': {
+            'context_processors': (
+                "django.contrib.auth.context_processors.auth",
+                "django.template.context_processors.debug",
+                "django.template.context_processors.i18n",
+                "django.template.context_processors.media",
+                "django.template.context_processors.static",
+                "django.template.context_processors.request",
+                "django.contrib.messages.context_processors.messages"
+            )
+        }
+    }
+]
 
+# Show incident IDs in views?
 INCIDENT_SHOW_ID = False
+
+# Incident ID prefix in views and links
+INCIDENT_ID_PREFIX = "FID:"
+
+# Permission added to the incident created by user, None for no permission
+INCIDENT_CREATOR_PERMISSION = 'incidents.view_incidents'
+
+# If you can see an event/incident, you can comment it!
+INCIDENT_VIEWER_CAN_COMMENT = True
+
+
+# Escape HTML when displaying markdown
+MARKDOWN_SAFE_MODE = True
+
+# Allowed HTML tags in Markdown output (requires MARKDOWN_SAFE_MODE to be True)
+MARKDOWN_ALLOWED_TAGS = [
+    'a',
+    'abbr',
+    'acronym',
+    'b',
+    'blockquote',
+    'code',
+    'em',
+    'i',
+    'li',
+    'ol',
+    'strong',
+    'ul',
+    'p',
+    'h1', 'h2', 'h3', 'h4',
+    'table', 'thead', 'th', 'tbody', 'tr', 'td',
+    'br',
+    'hr',
+    'pre'
+]
+
+# User self-service features
+USER_SELF_SERVICE = {
+    # User can change his own email address
+    'CHANGE_EMAIL': True,
+    # User can change his first and last name
+    'CHANGE_NAMES': True,
+    # User can change his profile values (number of incidents per page, hide closed incidents)
+    'CHANGE_PROFILE': True,
+    # User can change his password
+    'CHANGE_PASSWORD': True
+}
+
+# Put notification events you don't want in this tuple
+# Example: NOTIFICATIONS_DISABLED_EVENTS = ('event:created', 'incident:created')
+NOTIFICATIONS_DISABLED_EVENTS = ()
+
+# Send 'incident:*' notification events for both Event and Incident if True
+NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS = False

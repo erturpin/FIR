@@ -25,6 +25,11 @@ EMAIL_PORT = 25
 
 # Uncomment this line to set a different reply-to address when sending alerts
 # REPLY_TO = other@address.com
+EMAIL_FROM = '"NAME" <address@email>'
+
+# Uncomment these lines if you want additional CC or BCC for all sent emails
+# EMAIL_CC = ['address@email']
+# EMAIL_BCC = ['address@email']
 
 # SECRET KEY
 SECRET_KEY = 'CHANGE_DUMMY_KEY_PLEASE'
@@ -32,11 +37,11 @@ SECRET_KEY = 'CHANGE_DUMMY_KEY_PLEASE'
 ################################################################
 
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
+TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
 
 # List of callables that know how to import templates from various sources.
 # In production, we want to cache templates in memory
-TEMPLATE_LOADERS = (
+TEMPLATES[0]['OPTIONS']['loaders'] = (
     ('django.template.loaders.cached.Loader', (
         'django.template.loaders.filesystem.Loader',
         'django.template.loaders.app_directories.Loader',
@@ -66,3 +71,6 @@ LOGGING = {
         },
     },
 }
+
+# External URL of your FIR application (used in fir_notification to render full URIs in templates)
+EXTERNAL_URL = 'http://fir.example.com'
